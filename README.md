@@ -1,0 +1,2 @@
+# ProyectoPINART-HidroUSMP-GCobra
+Trabajo final del grupo cobra en acorde con lo aprendido en clases de la universidad, carrera ingeniería civil y en el curso de hidrología. Desarrollaremos un programa que nos ayude a calcular los datos faltantes en las precipitaciones usando inteligencia artificial que no es muy convencional para este tipo de temas.  Aun estamos en proceso de prueba del desarrollo del codigo Estamos usando Librerias como Matplotlib, Keras, Numpy y PyQt5 para la interfaz gráfica Añadiremos el manual dentro del programa y fuera tambien
