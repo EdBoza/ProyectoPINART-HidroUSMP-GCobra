@@ -1,304 +1,449 @@
-"""---------------------------------LIBRERIAS NECESARIAS PARA ANALIZAR LOS DATOS--------------------------------------"""
-import tkinter as tk  # """TK= PARA SIMPLIFICAR EL NOMBRE TKINTER"""
-from tkinter import *  # """TKINTER= LIBRERIA PARA CREAR INTERFACES GRAFICAS(VENTANAS)"""
-import matplotlib.pyplot as plt  # """MATPLOTLIB= LIBRERIA PARA GRAFICAR FIGURAS """
-import pandas as pd  # """PANDAS= LIBRERIA PARA LEER Y ANALIZAR ARCHIVOS EXCEL,CSV,TXT"""
-from fpdf import FPDF  # """ LIBRERIA PARA CREAR PDF'S"""
-from sklearn.linear_model import \
-    LinearRegression  # """SKLEARN= LIBRERIA PARA FACILITAR EL CALCULO DE LA REGRESION LINEAL"""
-import sklearn.utils._weight_vector
-"""--------------------------------------------------------------------------------------------------------------"""
+from random import randint
+from PyQt5.QtGui import QIcon, QFont, QPalette, QImage, QPixmap
+from PyQt5.QtCore import (Qt, QDir, QFile, QFileInfo, QPropertyAnimation, QRect,
+                          QAbstractAnimation, QTranslator, QLocale, QLibraryInfo)
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QPushButton, QMessageBox,
+                             QFrame, QLabel, QFileDialog)
 
-"""--------------------------FUNCIONES DE CAMBIO DE COLOR DEL FONDO DE LA PANTALLA INICIAL----------------------------------------------"""
-def fondo_inicial():
-    mywindow['bg']='black'
-def fondo_negro():
-    mywindow['bg']='#213141'
-def fondo_azul():
-    mywindow['bg']='blue'
-def fondo_rojo():
-    mywindow['bg']='red'
-def fondo_morado():
-    mywindow['bg']='#8D34EB'
-def fondo_agua():
-    mywindow['bg']='#3382EB'
-def fondo_celeste():
-    mywindow['bg']='#0DEAFF'
-"""--------------------------------------------------------------------------------------------------------------"""
+# ========================= CLASE Widgets ==========================
+class hoverButton(QPushButton):
+    def __init__(self, parent=None):
+        QPushButton.__init__(self, parent)
 
-"""--------------------------FUNCION PARA EXPORTAR EL RESULTADO A PDF----------------------------------------------"""
-def send_data():
-    data = pd.read_excel(r"C:\Program Files\RMULGAL\RegresionLinealDatos.xlsx")
-    print(data)
-    nEstprincipal = data['EstacionPrincipal'].values.reshape(-1, 1)
-    nEstfaltante = data['EstacionFaltante'].values.reshape(-1, 1)
-    linear_regressor = LinearRegression()
-    linear_regressor.fit(nEstprincipal, nEstfaltante)
-    nEstfaltante_pred = linear_regressor.predict(nEstprincipal)
-    # y= mx+c
-    m = linear_regressor.coef_[0][0]
-    c = linear_regressor.intercept_[0]
-    label = r'$nEstFaltante = %0.4f*EstPrincipal %+0.4f$' % (m, c)
-    print(label)
-    fig = plt.figure(figsize=(14, 14))
-    plt.scatter(data['EstacionPrincipal'], data['EstacionFaltante'], label="Datos Iniciales")
-    plt.plot(nEstprincipal, nEstfaltante_pred, color='red', label=label)
-    plt.xlabel("Estacion Principal")
-    plt.ylabel("Estacion Faltante")
-    plt.legend()
-    plt.grid()
-    plt.savefig('RegrLine.png')
-    pdf = FPDF('P', 'mm', 'A4')
-    pdf.add_page()
-    pdf.set_font('arial', 'B', 11)
-    pdf.cell(60)
-    pdf.cell(75, 10, 'GRÁFICA DE REGRESIÓN LINEAL ', 0, 2, 'C')
-    pdf.cell(75, 12, 'Hecho por: Grupo Mulga   DOCENTE: Fernando Paz   CURSO: Hidrología', 0, 2, 'C')
-    pdf.cell(90, 10, '', 0, 2, 'C')
-    pdf.cell(-55)
-    pdf.image("RegrLine.png", 0, 30, 205)
-    pdf.output('RESULTADORMULGA.pdf', 'F')
-"""--------------------------------------------------------------------------------------------------------------"""
+        self.setMouseTracking(True)
 
-"""--------------------------FUNCION QUE CREA UNA VENTANA Y MUESTRA LA ECUACION LINEAL----------------------------------------------"""
-def ecuacion():
-    ewindow= Tk()
-    ewindow.geometry("500x100")
-    ewindow.resizable(False, False)
-    ewindow.config(background="black")
-    ewindow.title("ECUACIÓN DE LA RECTA DE REGRESIÓN LINEAL")
-    data = pd.read_excel(r"C:\Program Files\RMULGAL\RegresionLinealDatos.xlsx")
-    nEstprincipal = data['EstacionPrincipal'].values.reshape(-1, 1)
-    nEstfaltante = data['EstacionFaltante'].values.reshape(-1, 1)
-    linear_regressor = LinearRegression()
-    linear_regressor.fit(nEstprincipal, nEstfaltante)
-    # y= mx+c
-    m = linear_regressor.coef_[0][0]
-    c = linear_regressor.intercept_[0]
-    label = r'$nEstFaltante = %0.4f*EstPrincipal %+0.4f$' % (m, c)
-    a_label = Label(ewindow, text="RESULTADO", fg="white", bg="blue", height="2",
-                    width="45", font=("Cambria", 14, 'bold'))
-    a_label.place(x=0, y=0)
-    B_label = Label(ewindow, text=label, fg="white", bg="black", height="1",
-                    width="50", font=("Cambria", 14, 'bold'))
-    B_label.place(x=0, y=60)
-"""--------------------------------------------------------------------------------------------------------------"""
+        self.fuente = self.font()
 
-"""--------------------------FUNCION QUE CREA UNA VENTANA Y MUESTRA EL CODIGO----------------------------------------------"""
-def codigo():
-    vwindow = Tk()
-    vwindow.state('zoomed')
-    vwindow.title("CODIGO  FUENTE  PYHTHON")
-    vwindow.resizable(False, False)
-    vwindow.config(background="black")
-    a_label = Label(vwindow,text="CÓDIGO PRINCIPAL PARA EL ANALISIS DE DATOS", fg="white", bg="green", height="1",width="125", font=("Cambria", 14,'bold'))
-    a_label.place(x=0, y=0)
-    b_label = Label(vwindow,text="import pandas as pd", fg="white", bg="black", height="1", font=("Cambria", 14))
-    b_label.place(x=20, y=30)
-    c_label = Label(vwindow, text="import matplotlib.pyplot as plt", fg="white", bg="black", height="1",
-                           font=("Cambria", 14))
-    c_label.place(x=20, y=60)
-    d_label = Label(vwindow, text="from sklearn.linear_model import LinearRegression", fg="white", bg="black", height="1",
-                           font=("Cambria", 14))
-    d_label.place(x=20, y=100)
-    e_label = Label(vwindow, text="from tkinter import *", fg="white", bg="black", height="1",
-                           font=("Cambria", 14))
-    e_label.place(x=20, y=140)
-    f_label = Label(vwindow, text="import tkinter as tk", fg="white", bg="black", height="1",
-                           font=("Cambria", 14))
-    f_label.place(x=20, y=180)
-    g_label = Label(vwindow, text="data = pd.read_excel('RegresionLinealDatos.xlsx')", fg="white", bg="black", height="1",
-                           font=("Cambria", 14))
-    g_label.place(x=20, y=220)
-    h_label = Label(vwindow, text="nEstprincipal = data['EstacionPrincipal'].values.reshape(-1, 1)", fg="white", bg="black", height="1",
-                           font=("Cambria", 14))
-    h_label.place(x=20, y=260)
-    i_label = Label(vwindow, text="nEstfaltante = data['EstacionFaltante'].values.reshape(-1, 1)", fg="white", bg="black", height="1",
-                           font=("Cambria", 14))
-    i_label.place(x=20, y=300)
-    j_label = Label(vwindow, text="linear_regressor = LinearRegression()", fg="white", bg="black", height="1",
-                           font=("Cambria", 14))
-    j_label.place(x=20, y=340)
-    k_label = Label(vwindow, text="linear_regressor.fit(nEstprincipal, nEstfaltante)", fg="white", bg="black", height="1",
-                           font=("Cambria", 14))
-    k_label.place(x=20, y=380)
-    l_label = Label(vwindow, text="nEstfaltante_pred = linear_regressor.predict(nEstprincipal)", fg="white", bg="black", height="1",
-                           font=("Cambria", 14))
-    l_label.place(x=20, y=420)
-    m_label = Label(vwindow, text="# y= mx+c", fg="white", bg="black", height="1",
-                           font=("Cambria", 14))
-    m_label.place(x=20, y=460)
-    n_label = Label(vwindow, text="m = linear_regressor.coef_[0][0]", fg="white", bg="black", height="1",
-                           font=("Cambria", 14))
-    n_label.place(x=20, y=500)
-    o_label = Label(vwindow, text="c = linear_regressor.intercept_[0]", fg="white", bg="black", height="1",
-                           font=("Cambria", 14))
-    o_label.place(x=20, y=540)
-    p_label = Label(vwindow, text="label = r'$nEstFaltante = %0.4f*EstPrincipal %+0.4f$' % (m, c)", fg="white", bg="black", height="1",
-                           font=("Cambria", 14))
-    p_label.place(x=20, y=580)
-    q_label = Label(vwindow, text="fig = plt.figure(figsize=(14, 14))", fg="white", bg="black", height="1",
-                           font=("Cambria", 14))
-    q_label.place(x=20, y=620)
-    r_label = Label(vwindow, text="plt.scatter(data['EstacionPrincipal'], data['EstacionFaltante'], label='Datos Iniciales')", fg="white", bg="black", height="1",
-                           font=("Cambria", 14))
-    r_label.place(x=20, y=660)
-    s_label = Label(vwindow, text="plt.plot(nEstprincipal, nEstfaltante_pred, color='red', label=label)", fg="white", bg="black", height="1",
-                           font=("Cambria", 14))
-    s_label.place(x=20, y=700)
-    t_label = Label(vwindow, text="plt.xlabel('Estacion Principal')", fg="white", bg="black", height="1",
-                           font=("Cambria", 14))
-    t_label.place(x=800, y=30)
-    u_label = Label(vwindow, text="plt.ylabel('Estacion Faltante')", fg="white", bg="black", height="1",
-                           font=("Cambria", 14))
-    u_label.place(x=800, y=60)
-    v_label = Label(vwindow, text="plt.legend()", fg="white", bg="black", height="1",
-                           font=("Cambria", 14))
-    v_label.place(x=800, y=100)
-    x_label = Label(vwindow, text="plt.grid()", fg="white", bg="black", height="1",
-                           font=("Cambria", 14))
-    x_label.place(x=800, y=140)
-    y_label = Label(vwindow, text="plt.show()", fg="white", bg="black", height="1",
-                           font=("Cambria", 14))
-    y_label.place(x=800, y=180)
-    z_label = Label(vwindow, text="import pandas as pd", fg="white", bg="black", height="1",
-                           font=("Cambria", 14))
-    z_label.place(x=800, y=220)
-"""--------------------------------------------------------------------------------------------------------------"""
+        self.posicionX = int
+        self.posicionY = int
 
-"""--------------------------FUNCION(BOTON GRAFICAR) PARA CREAR MOSTRAR LA GRAFICA----------------------------------------------"""
-def calculo():
-    data = pd.read_excel(r"C:\Program Files\RMULGAL\RegresionLinealDatos.xlsx")
-    print(data)
-    nEstprincipal = data['EstacionPrincipal'].values.reshape(-1, 1)
-    nEstfaltante = data['EstacionFaltante'].values.reshape(-1, 1)
-    linear_regressor = LinearRegression()
-    linear_regressor.fit(nEstprincipal, nEstfaltante)
-    nEstfaltante_pred = linear_regressor.predict(nEstprincipal)
-    # y= mx+c
-    m = linear_regressor.coef_[0][0]
-    c = linear_regressor.intercept_[0]
-    label = r'$nEstFaltante = %0.4f*EstPrincipal %+0.4f$' % (m, c)
-    print(label)
-    fig = plt.figure(figsize=(14, 14))
-    plt.scatter(data['EstacionPrincipal'], data['EstacionFaltante'], label="Datos Iniciales")
-    plt.plot(nEstprincipal, nEstfaltante_pred, color='red', label=label)
-    plt.xlabel("Estacion Principal")
-    plt.ylabel("Estacion Faltante")
-    plt.legend()
-    plt.grid()
-    plt.show()
-"""--------------------------------------------------------------------------------------------------------------"""
+    def enterEvent(self, event):
+        self.posicionX = self.pos().x()
+        self.posicionY = self.pos().y()
 
-"""--------------------------FUNCION PARA CERRAR EL PROGRAMA----------------------------------------------"""
-def close():
-    mywindow.destroy()
+        self.animacionCursor = QPropertyAnimation(self, b"geometry")
+        self.animacionCursor.setDuration(100)
+        self.animacionCursor.setEndValue(QRect(self.posicionX - 15, self.posicionY - 6, 170, 38))
+        self.animacionCursor.start(QAbstractAnimation.DeleteWhenStopped)
+
+        self.fuente.setPointSize(11)
+        self.setFont(self.fuente)
+
+    def leaveEvent(self, event):
+        self.fuente.setPointSize(10)
+        self.setFont(self.fuente)
+
+        self.animacionNoCursor = QPropertyAnimation(self, b"geometry")
+        self.animacionNoCursor.setDuration(100)
+        self.animacionNoCursor.setEndValue(QRect(self.posicionX, self.posicionY, 140, 28))
+        self.animacionNoCursor.start(QAbstractAnimation.DeleteWhenStopped)
+
+class Widgets(QWidget):
+    def __init__(self, parent=None):
+        super(Widgets, self).__init__(parent)
+        self.parent = parent
+        self.initUI()
+    def initUI(self):
+        # ======================== WIDGETS ===========================
+        framePrincipal = QFrame(self)
+        framePrincipal.setFrameShape(QFrame.Box)
+        framePrincipal.setFrameShadow(QFrame.Sunken)
+        framePrincipal.setAutoFillBackground(True)
+        framePrincipal.setBackgroundRole(QPalette.Light)
+        framePrincipal.setFixedSize(662, 503)
+        framePrincipal.move(10, 10)
+
+        frame = QFrame(framePrincipal)
+        frame.setFixedSize(640, 480)
+        frame.move(10, 10)
+
+        self.labelImagen = QLabel(frame)
+        self.labelImagen.setAlignment(Qt.AlignCenter)
+        self.labelImagen.setGeometry(0, 0, 640, 480)
+
+        self.labelImagenUno = QLabel(frame)
+        self.labelImagenUno.setAlignment(Qt.AlignCenter)
+        self.labelImagenUno.setGeometry(-650, 0, 640, 480)
+
+        # =================== BOTONES (QPUSHBUTTON) ==================
+        self.buttonCargar = hoverButton(self)
+        self.buttonCargar.setText(("TUTORIAL"))
+        self.buttonCargar.setCursor(Qt.PointingHandCursor)
+        self.buttonCargar.setFixedSize(210, 30)
+        self.buttonCargar.setAutoDefault(False)
+        self.buttonCargar.move(10, 519)
 
 
-"""--------------------------------------------------------------------------------------------------------------"""
-"""--------------------------CREACION DE VENTANA PRINCIPAL interfaz grafica O INICIAL----------------------------------------------"""
-mywindow = Tk()
-mywindow.geometry("650x490")
-mywindow.title("RMULGAL")
-mywindow.resizable(False, False)
-mywindow.config(background="black") ##213141 color azulado
-"""--------------------------------------------------------------------------------------------------------------"""
+        self.buttonEliminar = hoverButton(self)
+        self.buttonEliminar.setText("EJECUTAR PINART")
+        self.buttonEliminar.setCursor(Qt.PointingHandCursor)
+        self.buttonEliminar.setFixedSize(210, 30)
+        self.buttonCargar.setAutoDefault(False)
+        self.buttonEliminar.move(220, 519)
 
-"""--------------------------CREACION DE BARRA SUPERIOR  DESPLEGABLE----------------------------------------------"""
-mi_menu= tk.Menu(mywindow)
-mi_menu.add_command(label="Inicio",command=fondo_inicial)
-mi_doc_menu= tk.Menu(mi_menu)
-mi_doc_menu.add_command(label="FERNANDO PAZ ZAGACETA")
-mi_menu.add_cascade(label="Docente",menu=mi_doc_menu)
-mi_dropdown_menu= tk.Menu(mi_menu)
-mi_dropdown_menu.add_command(label="SUSAN MELIZA SUPO ZAPANA",command=fondo_negro)
-mi_dropdown_menu.add_command(label="KELVIN ELVIO SURCO PAUCCAR",command=fondo_azul)
-mi_dropdown_menu.add_command(label="JUAN CARLOS TAMO TACUSI",command=fondo_rojo)
-mi_dropdown_menu.add_command(label="YENNY LIZBET VALENZUELA AZURIN",command=fondo_morado)
-mi_dropdown_menu.add_command(label="AHIRTHON YURDE VARGAS CURSE",command=fondo_agua)
-mi_dropdown_menu.add_command(label="JHAIR GONZALO VENERO LOVATON",command=fondo_celeste,)
-mi_menu.add_cascade(label="Integrantes",menu=mi_dropdown_menu)
-mywindow.config(menu=mi_menu)
-main_title = Label(text="Regresión  |  LINEAL   ", font=("Cambria", 14,"bold"), bg="#D7DBD7", fg="black", width="500",
-                   height="2")
-main_title.pack()
-"""--------------------------------------------------------------------------------------------------------------"""
+        self.buttonExportar = hoverButton(self)
+        self.buttonExportar.setText("EXPORT DATA")
+        self.buttonExportar.setCursor(Qt.PointingHandCursor)
+        self.buttonExportar.setFixedSize(175, 30)
+        self.buttonCargar.setAutoDefault(False)
+        self.buttonExportar.move(430, 519)
 
-"""-------------------------- TEXTO DE PRESENTACIÓN INICIAL----------------------------------------------"""
-username_label = Label(text="RMULGAL", fg= "white",bg="black", height="1",font=("Courier",20))
-username_label.place(x=260, y=90)
-password_label = Label(text="REMULGAL es un programa que nos ayuda a generar\n re"
-                            "gresiones lineales para el calculo de valores inexistentes\n"
-                            "entre dos estaciones, a través del método de los minimos cuadrados\n de una recta de regresion"
-                            " lineal del tipo\n\n"
-                            " y=a+bx ", fg= "white",bg="black",font=("Verdana",10,'italic'))
-password_label.place(x=100, y=130)
-fullname_label = Label(text="FUNCIONES DE RMULGA\n"
-                            "\n"
-                            "| Calcula la regresion lineal de gran cantidad de datos |\n"
-                            "| Genera la ecuacion de la recta de primer grado |\n"
-                            "| Grafica los resultados para una mejor interpretación de resultados |\n"
-                            "| Exporta los resultados a un pdf para su uso |", fg= "white",bg="black",font=("Verdana",10,'italic'))
-fullname_label.place(x=100, y=240)
-"""--------------------------------------------------------------------------------------------------------------"""
+        self.buttonAnterior = QPushButton("<", self)
+        self.buttonAnterior.setObjectName("Anterior")
+        self.buttonAnterior.setToolTip("Imagen anterior")
+        self.buttonAnterior.setCursor(Qt.PointingHandCursor)
+        self.buttonAnterior.setFixedSize(30, 30)
+        self.buttonAnterior.move(610, 519)
 
-"""----------------------------BOTONES PARA EJECUTAR EL PROGRAMA---------------------------------------"""
-submit_btn = Button(mywindow, text="GRÁFICA", width="27",font=("Cambria", 10,"bold"), height="1", command=calculo, bg="yellow", fg= "#213141")
-submit_btn.place(x=28, y=400)
-submit_btn = Button(mywindow, text="ECUACIÓN DE LA RECTA",font=("Cambria", 10,"bold"), width="27", height="1", command=ecuacion, bg="blue", fg= "white")
-submit_btn.place(x=405, y=400)
-submit_btn = Button(mywindow, text="CODIGO FUENTE PYTHON",font=("Cambria", 10,"bold"), width="27", height="1", command=codigo, bg="green", fg= "white")
-submit_btn.place(x=405, y=440)
-submit_btn = Button(mywindow, text="EXPORTAR DATOS PDF",font=("Cambria", 10,"bold"), width="27", height="1", command=send_data, bg="#CC00BE", fg= "white")
-submit_btn.place(x=28, y=440)
-submit_btn = Button(mywindow, text="EXIT", width="5", height="1", command=close, bg="red",fg= "white",font=("Verdana",30,"bold"))
-submit_btn.place(x=255, y=400)
-"""--------------------------------------------------------------------------------------------------------------"""
+        self.buttonSiguiente = QPushButton(">", self)
+        self.buttonSiguiente.setObjectName("Siguiente")
+        self.buttonSiguiente.setToolTip("Imagen siguiente")
+        self.buttonSiguiente.setCursor(Qt.PointingHandCursor)
+        self.buttonSiguiente.setFixedSize(30, 30)
+        self.buttonSiguiente.move(642, 519)
 
-"""--------------------------decoracion izquierd----------------------------------------------"""
-submit_btn = Button(mywindow, text="", width="1", height="18", bg="black", fg= "#0000A0")
-submit_btn.place(x=22, y=80)
-submit_btn = Button(mywindow, text="", width="1", height="18", bg="#393A39", fg= "#0000A0")
-submit_btn.place(x=30, y=80)
-submit_btn = Button(mywindow, text="", width="1", height="18",  bg="#D7DBD7", fg= "#0000A0")
-submit_btn.place(x=0, y=0)
-submit_btn = Button(mywindow, text="", width="1", height="18",  bg="#393A39", fg= "#0000A0")
-submit_btn.place(x=8, y=0)
-submit_btn = Button(mywindow, text="", width="1", height="18", bg="black", fg= "#0000A0")
-submit_btn.place(x=0, y=250)
-submit_btn = Button(mywindow, text="", width="1", height="18", bg="#393A39", fg= "#0000A0")
-submit_btn.place(x=8, y=250)
-"""--------------------------------------------------------------------------------------------------------------"""
+        # ===================== CONECTAR SEÑALES =====================
 
-"""--------------------------decoracion DERECHA----------------------------------------------"""
-submit_btn = Button(mywindow, text="", width="1", height="18", bg="black", fg= "#0000A0")
-submit_btn.place(x=620, y=80)
-submit_btn = Button(mywindow, text="", width="1", height="18", bg="#393A39", fg= "#0000A0")
-submit_btn.place(x=610, y=80)
-submit_btn = Button(mywindow, text="", width="1", height="18",  bg="#D7DBD7", fg= "#0000A0")
-submit_btn.place(x=640, y=0)
-submit_btn = Button(mywindow, text="", width="1", height="18",  bg="#393A39", fg= "#0000A0")
-submit_btn.place(x=630, y=0)
-submit_btn = Button(mywindow, text="", width="1", height="18",  bg="black", fg= "#0000A0")
-submit_btn.place(x=640, y=250)
-submit_btn = Button(mywindow, text="", width="1", height="18",  bg="#393A39", fg= "#0000A0")
-submit_btn.place(x=630, y=250)
-"""--------------------------------------------------------------------------------------------------------------"""
+        self.buttonCargar.clicked.connect(self.Cargar)
+        self.buttonEliminar.clicked.connect(self.Eliminar)
+        self.buttonAnterior.clicked.connect(self.anteriorSiguiente)
+        self.buttonSiguiente.clicked.connect(self.anteriorSiguiente)
+        self.buttonExportar.clicked.connect(self.Exportar)
 
-"""--------------------------decoracion INTERMEDIA----------------------------------------------"""
-submit_btn = Button(mywindow, text="", width="85", height="1", bg="#D7DBD7", fg= "#DB0300")
-submit_btn.place(x=25, y=55)
-submit_btn = Button(mywindow, text="", width="85", height="1",  bg="#393A39", fg= "#DB0300")
-submit_btn.place(x=25, y=50)
-submit_btn = Button(mywindow, text="", width="85", height="1",  bg="#D7DBD7", fg= "#DB0300")
-submit_btn.place(x=25, y=350)
-submit_btn = Button(mywindow, text="", width="85", height="1",  bg="#393A39", fg= "#DB0300")
-submit_btn.place(x=25, y=355)
+        # Establecer los valores predeterminados
+        self.posicion = int
+        self.estadoAnterior, self.estadoSiguiente = False, False
+        self.carpetaActual = QDir()
+        self.imagenesCarpeta = []
 
-mywindow.mainloop()
-"""--------------------------------------------------------------------------------------------------------------"""
+    # ======================= FUNCIONES ==============================
+
+    def bloquearBotones(self, bool):
+        self.buttonCargar.setEnabled(bool)
+        self.buttonEliminar.setEnabled(bool)
+        self.buttonExportar.setEnabled(bool)
+        self.buttonAnterior.setEnabled(bool)
+        self.buttonSiguiente.setEnabled(bool)
 
 
+    def Mostrar(self, label, imagen, nombre, posicionX=650):
+        imagen = QPixmap.fromImage(imagen)
+        # Escalar imagen a 640x480 si el ancho es mayor a 640 o el alto mayor a 480
+        if imagen.width() > 640 or imagen.height() > 480:
+            imagen = imagen.scaled(640, 480, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        # Mostrar imagen
+        label.setPixmap(imagen)
+        # Animación (al finalizar la animación se muestra en la barra de estado el nombre y la extensión de la imagen
+        # y se desbloquean los botones).
+        self.animacionMostar = QPropertyAnimation(label, b"geometry")
+        self.animacionMostar.finished.connect(lambda: (self.parent.statusBar.showMessage(nombre),
+                                                       self.bloquearBotones(True)))
+        self.animacionMostar.setDuration(200)
+        self.animacionMostar.setStartValue(QRect(posicionX, 0, 640, 480))
+        self.animacionMostar.setEndValue(QRect(0, 0, 640, 480))
+        self.animacionMostar.start(QAbstractAnimation.DeleteWhenStopped)
 
+    def Limpiar(self, labelConImagen, labelMostrarImagen, imagen, nombre,
+                posicionInternaX, posicionX=None):
+        def Continuar(estado):
+            if estado:
+                if posicionX:
+                    self.Mostrar(labelMostrarImagen, imagen, nombre, posicionX)
+                else:
+                    self.Mostrar(labelMostrarImagen, imagen, nombre)
+
+        self.animacionLimpiar = QPropertyAnimation(labelConImagen, b"geometry")
+        self.animacionLimpiar.finished.connect(lambda: labelConImagen.clear())
+        self.animacionLimpiar.setDuration(200)
+        # self.animacionLimpiar.valueChanged.connect(lambda x: print(x))
+        self.animacionLimpiar.stateChanged.connect(Continuar)
+        self.animacionLimpiar.setStartValue(QRect(0, 0, 640, 480))
+        self.animacionLimpiar.setEndValue(QRect(posicionInternaX, 0, 640, 480))
+        self.animacionLimpiar.start(QAbstractAnimation.DeleteWhenStopped)
+
+    def Cargar(self):
+        nombreImagen, _ = QFileDialog.getOpenFileName(self, "Seleccionar TUTORIAL",
+                                                      QDir.currentPath(),
+                                                      "Archivos de imagen (*.jpg *.png *.ico *.bmp)")
+        if nombreImagen:
+            # Verificar que QLabel tiene imagen
+            labelConImagen = ""
+            if self.labelImagen.pixmap():
+                labelConImagen = self.labelImagen
+            elif self.labelImagenUno.pixmap():
+                labelConImagen = self.labelImagenUno
+            imagen = QImage(nombreImagen)
+            if imagen.isNull():
+                if labelConImagen:
+                    self.Eliminar()
+                QMessageBox.information(self, "Visor de imágenes",
+                                        "No se puede cargar %s." % nombreImagen)
+                return
+            # Obtener ruta de la carpeta que contiene la imagen seleccionada
+            self.carpetaActual = QDir(QFileInfo(nombreImagen).absoluteDir().path())
+            # Obtener la ruta y el nombre de las imagenes que se encuentren en la carpeta de
+            # la imagen seleccionada
+            imagenes = self.carpetaActual.entryInfoList(["*.jpg", "*.png", "*.ico", "*.bmp", '.gift'],
+                                                        QDir.Files, QDir.Name)
+            self.imagenesCarpeta = [imagen.absoluteFilePath() for imagen in imagenes]
+            self.posicion = self.imagenesCarpeta.index(nombreImagen)
+            self.estadoAnterior = True if self.posicion == 0 else False
+            self.estadoSiguiente = True if self.posicion == len(self.imagenesCarpeta) - 1 else False
+            # Función encargada de bloquear o desbloquear los botones
+            self.bloquearBotones(False)
+            # Nombre y extensión de la imagen
+            nombre = QFileInfo(nombreImagen).fileName()
+            if labelConImagen:
+                posicionInternaX = -650
+                labelMostrarImagen = self.labelImagen if self.labelImagenUno.pixmap() else self.labelImagenUno
+                self.Limpiar(labelConImagen, labelMostrarImagen, imagen, nombre, posicionInternaX)
+            else:
+                self.Mostrar(self.labelImagen, imagen, nombre)
+
+    def Eliminar(self):
+        from string import ascii_letters
+        import pandas as pd
+        import numpy as np
+        from matplotlib import pyplot as plt
+        import seaborn as sns
+        from sklearn.preprocessing import StandardScaler
+        from keras.models import Sequential
+        from keras.layers import Dense
+        # ------------------------------------------------------------------------------------------------
+        TodasEstaciones = r"C:\Program Files\Pinart\DatosPrecipitacionesPinart.xlsx"
+        df = pd.read_excel(TodasEstaciones, index_col=0)
+        # ------------------------------------------------------------------------------------------
+        x_train = df.loc['2013-01-01':'2013-12-31', ['Est1', 'Est2', 'Est3', 'Est4', 'Est5']].astype(float).values
+        y_train = df.loc['2013-01-01':'2013-12-31', ['Estx']].astype(float).values
+        # ----------------------------------------------------------------------------------------------
+        scaler = StandardScaler().fit(x_train)
+        x_train = scaler.transform(x_train)
+        # -----------------------------------------------------------------------------------------------
+        model = Sequential()
+        model.add(Dense(2, activation='linear', input_shape=(5,)))
+        model.add(Dense(4, activation='linear'))
+        model.add(Dense(8, activation='linear'))
+        model.add(Dense(1, activation='linear'))
+        model.summary()
+        # -------------------------------------------------------------------------------
+        y_pred = model.predict(x_train)
+        x_missing = df.loc['2013-01-01':'2013-12-31', ['Est1', 'Est2', 'Est3', 'Est4', 'Est5']].astype(float).values
+
+        scaler = StandardScaler().fit(x_missing)
+        x_missing = scaler.transform(x_missing)
+        y_missing = model.predict(x_missing)
+        y_missing = y_missing.reshape(365).tolist()
+        df['Estx_Completed'] = df['Estx']
+        df['Estx_Completed'].loc['2013-01-01':'2013-12-31'] = y_missing
+        df.plot(subplots=['Est1', 'Est2', 'Est3', 'Est4', 'Est5', 'Estx''Estx_Completed'], figsize=(12, 8));
+        plt.legend(loc='best')
+        plt.show()
+
+
+    def Exportar(self):
+        from fpdf import FPDF
+        from string import ascii_letters
+        import pandas as pd
+        import numpy as np
+        from matplotlib import pyplot as plt
+        import seaborn as sns
+        from sklearn.preprocessing import StandardScaler
+        from keras.models import Sequential
+        from keras.layers import Dense
+        # ------------------------------------------------------------------------------------------------
+        TodasEstaciones = r"C:\Program Files\Pinart\DatosPrecipitacionesPinart.xlsx"
+        df = pd.read_excel(TodasEstaciones, index_col=0)
+        x_train = df.loc['2013-01-01':'2013-12-31', ['Est1', 'Est2', 'Est3', 'Est4', 'Est5']].astype(float).values
+        y_train = df.loc['2013-01-01':'2013-12-31', ['Estx']].astype(float).values
+        # ----------------------------------------------------------------------------------------------
+        scaler = StandardScaler().fit(x_train)
+        x_train = scaler.transform(x_train)
+        # -----------------------------------------------------------------------------------------------
+        model = Sequential()
+        model.add(Dense(2, activation='linear', input_shape=(5,)))
+        model.add(Dense(4, activation='linear'))
+        model.add(Dense(8, activation='linear'))
+        model.add(Dense(1, activation='linear'))
+        model.summary()
+        # -------------------------------------------------------------------------------
+        y_pred = model.predict(x_train)
+        x_missing = df.loc['2013-01-01':'2013-12-31', ['Est1', 'Est2', 'Est3', 'Est4', 'Est5']].astype(float).values
+
+        scaler = StandardScaler().fit(x_missing)
+        x_missing = scaler.transform(x_missing)
+        y_missing = model.predict(x_missing)
+        y_missing = y_missing.reshape(365).tolist()
+        df['Estx_Completed'] = df['Estx']
+        df['Estx_Completed'].loc['2013-01-01':'2013-12-31'] = y_missing
+        df.plot(subplots=['Est1', 'Est2', 'Est3', 'Est4', 'Est5', 'Estx''Estx_Completed'], figsize=(12, 8));
+        plt.xlabel("Tiempo (Days)")
+        plt.ylabel('                                                                                                                     Precipitación (mm)')
+        plt.legend(loc='best')
+        plt.savefig('grafico.png')
+        pdf = FPDF('P', 'mm', 'A4')
+        pdf.add_page()
+        pdf.set_font('arial', 'BU', 20)
+        pdf.cell(60)
+        pdf.cell(75, 10, 'Estimación de Datos Faltantes', 0, 2, 'C')
+        pdf.cell(75, 10, 'con uso de', 0, 2, 'C')
+        pdf.cell(75, 10, 'Inteligencia Artificial', 0, 2, 'C')
+        pdf.set_font('arial', 'B', 20)
+        pdf.cell(75, 10, 'PINART', 0, 2, 'C')
+        pdf.set_font('arial','I', 11)
+        pdf.cell(75, 1, '(Precipitación - Inteligencia - Artificial)', 0, 2, 'C')
+        pdf.cell(75, 20, 'UNIVERSIDAD SAN MARTIN DE PORRES', 0, 2, 'C')
+        pdf.cell(75, 1, 'HIDROLOGÍA', 0, 2, 'C')
+        pdf.cell(1, 10, 'Docente:', 0, 2, 'L')
+        pdf.cell(1, 10, 'FERNANDO PAZ ZAGACETA', 0, 2, 'L')
+        pdf.cell(1, 10, 'Integrantes:', 0, 2, 'L')
+        pdf.cell(75, 5, 'MIRZA ELIZABETH APAZA VALDEZ', 0, 2, 'C')
+        pdf.cell(75, 5, 'JHEAN PAUL ARIZACA SALDIVAR', 0, 2, 'C')
+        pdf.cell(75, 5, 'JESUS SIMON BECERRA MIRANDA', 0, 2, 'C')
+        pdf.cell(75, 5, 'JOAN MANUEL BEJAR DINOS', 0, 2, 'C')
+        pdf.cell(75, 5, 'EDWIN HEBER BOZA SALAS', 0, 2, 'C')
+        pdf.cell(75, 5, 'ANDRES AVELINO CACERES CHICLLASTO', 0, 2, 'C')
+        pdf.cell(75, 5, 'ROGGER CELSO CACYA OVIEDO', 0, 2, 'C')
+        pdf.cell(75, 10, '', 0, 2, 'C')
+        pdf.set_font('arial', 'BU', 15)
+        pdf.cell(75, 10, 'RESULTADOS EXPORTADOS DE PINART', 0, 2, 'C')
+        pdf.cell(75, 10, '', 0, 2, 'C')
+        pdf.cell(-55)
+        pdf.set_font('arial', 'B', 11)
+
+        columnNameList = list(df.columns)
+        for header in columnNameList[:-1]:
+            pdf.cell(25, 10, header, 1, 0, 'C')
+        pdf.cell(25, 10, columnNameList[-1], 1, 1, 'C')
+        pdf.cell(5)
+        pdf.set_font('arial', '', 11)
+        for row in range(0, len(df)):
+            for col_num, col_name in enumerate(columnNameList):
+                if col_num != len(columnNameList) - 1:
+                    pdf.cell(25, 10, str(df['%s' % (col_name)].iloc[row]), 1, 0, 'C')
+
+                else:
+                    pdf.cell(25, 10, str(df['%s' % (col_name)].iloc[row]), 1, 1, 'C')
+                    pdf.cell(5)
+        pdf.add_page('l')
+
+        pdf.set_font('arial', 'BU', 15)
+        pdf.cell(75, 1, 'GRÁFICA PINART', 0, 2, 'C')
+        pdf.image("grafico.png", 0,15, 300)
+        pdf.output('tuto1.pdf', 'F')
+
+    def anteriorSiguiente(self):
+        if self.imagenesCarpeta:
+            widget = self.sender().objectName()
+
+            if widget == "Anterior":
+                self.estadoAnterior = True if self.posicion == 0 else False
+                self.estadoSiguiente = False
+
+                self.posicion -= 1 if self.posicion > 0 else 0
+                posicionInternaX, posicionX = 650, -650
+            else:
+                self.estadoSiguiente = True if self.posicion == len(self.imagenesCarpeta) - 1 else False
+                self.estadoAnterior = False
+
+                self.posicion += 1 if self.posicion < len(self.imagenesCarpeta) - 1 else 0
+                posicionInternaX, posicionX = -650, 650
+
+            if self.estadoAnterior or self.estadoSiguiente:
+                return
+            else:
+                imagen = self.imagenesCarpeta[self.posicion]
+
+                # Verificar que la carpeta que contiene la imagene exista
+                if not QDir(self.carpetaActual).exists():
+                    self.Eliminar()
+                    return
+                elif not QFile.exists(imagen):
+                    # Obtener la ruta y el nombre de las imagenes que se encuentren en la
+                    # carpeta de la imagen seleccionada
+                    imagenes = self.carpetaActual.entryInfoList(["*.jpg", "*.png", "*.ico", "*.bmp"],
+                                                                QDir.Files, QDir.Name)
+
+                    if not imagenes:
+                        self.Eliminar()
+                        return
+
+                    self.imagenesCarpeta = [imagen.absoluteFilePath() for imagen in imagenes]
+
+                    self.posicion = randint(0, len(self.imagenesCarpeta) - 1)
+                    self.estadoAnterior = True if self.posicion == 0 else False
+                    self.estadoSiguiente = True if self.posicion == len(self.imagenesCarpeta) - 1 else False
+                elif QImage(imagen).isNull():
+                    del self.imagenesCarpeta[self.posicion]
+
+                    if not self.imagenesCarpeta:
+                        self.Eliminar()
+                        return
+
+                    self.posicion = randint(0, len(self.imagenesCarpeta) - 1)
+                    self.estadoAnterior = True if self.posicion == 0 else False
+                    self.estadoSiguiente = True if self.posicion == len(self.imagenesCarpeta) - 1 else False
+
+                imagen = self.imagenesCarpeta[self.posicion]
+
+                if self.labelImagen.pixmap():
+                    labelConImagen = self.labelImagen
+                elif self.labelImagenUno.pixmap():
+                    labelConImagen = self.labelImagenUno
+
+                # Función encargada de bloquear o desbloquear los botones
+                self.bloquearBotones(False)
+
+                # Nombre y extensión de la imagen
+                nombre = QFileInfo(imagen).fileName()
+
+                # Label en el que se va a mostrar la imagen
+                labelMostrarImagen = self.labelImagen if self.labelImagenUno.pixmap() else self.labelImagenUno
+
+                # Quitar la imagen actual y mostrar la siguiente
+                self.Limpiar(labelConImagen, labelMostrarImagen, QImage(imagen),
+                             nombre, posicionInternaX, posicionX)
+# ====================== CLASE visorImagenes =======================
+class visorImagenes(QMainWindow):
+    def __init__(self, parent=None):
+        super(visorImagenes, self).__init__(parent)
+
+        self.setWindowIcon(QIcon(r"C:\Program Files\Pinart\icon\pinart.png"))
+        self.setWindowTitle("PINART                                                            Universidad San Martin de Porres                  ")
+        self.setWindowFlags(Qt.MSWindowsFixedSizeDialogHint)
+        self.setFixedSize(682, 573)
+        self.initUI()
+    def initUI(self):
+        # ===================== LLAMAR WIDGETS =======================
+
+        widget = Widgets(self)
+        self.setCentralWidget(widget)
+
+        # =============== BARRA DE ESTADO (STATUSBAR) ================
+
+        labelVersion = QLabel(self)
+        labelVersion.setText("ING: Fernando Paz           G-COBRA: Mirza A. - Jhean A. - Jesus B. - Joan B. - Edwin B. - Andres A. - Rogger C.  ")
+
+
+        self.statusBar = self.statusBar()
+        self.statusBar.addPermanentWidget(labelVersion, 0)
+# ==================================================================
+
+if __name__ == '__main__':
+    import sys
+    aplicacion = QApplication(sys.argv)
+
+    traductor = QTranslator(aplicacion)
+    lugar = QLocale.system().name()
+    path = QLibraryInfo.location(QLibraryInfo.TranslationsPath)
+    traductor.load("qtbase_%s" % lugar, path)
+    aplicacion.installTranslator(traductor)
+
+    fuente = QFont()
+    fuente.setPointSize(10)
+    aplicacion.setFont(fuente)
+
+    ventana = visorImagenes()
+    ventana.show()
+    sys.exit(aplicacion.exec_())
 
 
